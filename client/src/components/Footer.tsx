@@ -1,111 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Sparkles, Github, Twitter, Mail } from 'lucide-react';
-
-const footerLinks = {
-  Product: [
-    { label: 'Explore Prompts', href: '/explore' },
-    { label: 'Categories', href: '/categories' },
-    { label: 'Free Prompts', href: '/free' },
-    { label: 'Pricing', href: '/pricing' },
-  ],
-  Sellers: [
-    { label: 'Start Selling', href: '/sell' },
-    { label: 'Seller Dashboard', href: '/seller/dashboard' },
-    { label: 'Seller Guide', href: '/seller/guide' },
-  ],
-  Company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Careers', href: '/careers' },
-  ],
-  Legal: [
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Refund Policy', href: '/refunds' },
-  ],
-};
+import BrandMark from '@/components/BrandMark';
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="bg-surface-950 text-surface-400 mt-auto">
-      {/* Main Footer */}
-      <div className="container-main py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
-          {/* Brand Column */}
-          <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white tracking-tight">
-                Prompt<span className="text-brand-400">Forge</span>
-              </span>
-            </Link>
-            <p className="text-sm text-surface-500 leading-relaxed mb-6">
-              Discover, buy, sell, and share high-quality AI prompts created by the community.
-            </p>
-            <div className="flex items-center gap-3">
-              <a
-                href="#"
-                className="p-2 rounded-lg bg-surface-900 text-surface-400 hover:text-white hover:bg-surface-800 transition-all duration-200"
-                aria-label="GitHub"
-              >
-                <Github className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="p-2 rounded-lg bg-surface-900 text-surface-400 hover:text-white hover:bg-surface-800 transition-all duration-200"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="p-2 rounded-lg bg-surface-900 text-surface-400 hover:text-white hover:bg-surface-800 transition-all duration-200"
-                aria-label="Email"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* Link Columns */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-sm font-semibold text-white mb-4 tracking-wide uppercase">
-                {category}
-              </h3>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-surface-500 hover:text-white transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+    <footer className="mt-20 border-t border-ink-700 bg-ink-900 text-paper-200">
+      <div className="page-shell grid gap-10 py-12 md:grid-cols-[1.3fr_1fr_1fr]">
+        <div><BrandMark /><p className="mt-4 max-w-xs text-sm leading-6 text-ink-100">A considered market for prompts that earn a place in your working library.</p></div>
+        <div><p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-forge-300">Browse</p><div className="grid gap-2 text-sm"><Link to="/explore">All prompts</Link><Link to="/categories">Collections</Link><Link to="/wishlist">Your shelf</Link></div></div>
+        <div><p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-forge-300">Create</p><div className="grid gap-2 text-sm"><Link to="/seller/dashboard">Creator workspace</Link><Link to="/ai/generator">Prompt studio</Link><Link to="/login">Sign in</Link></div></div>
       </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-surface-800">
-        <div className="container-main py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-surface-600">
-            &copy; {currentYear} PromptForge. All rights reserved.
-          </p>
-          <p className="text-xs text-surface-700">
-            Built for creators, by creators.
-          </p>
-        </div>
-      </div>
+      <div className="border-t border-ink-700"><div className="page-shell flex flex-col gap-2 py-5 text-xs text-ink-100 sm:flex-row sm:justify-between"><span>© {new Date().getFullYear()} PromptForge</span><span>Made for work worth keeping.</span></div></div>
     </footer>
   );
 }

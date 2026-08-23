@@ -1,173 +1,57 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Sparkles,
-  Search,
-  Menu,
-  X,
-  ShoppingBag,
-  Heart,
-  User,
-} from 'lucide-react';
-import { useAppStore } from '@/store/useAppStore';
+import { useEffect, useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { Bookmark, Menu, Search, ShoppingBag, X } from 'lucide-react';
+import BrandMark from '@/components/BrandMark';
+import SearchPalette from '@/components/SearchPalette';
 
-const navLinks = [
-  { label: 'Explore', href: '/explore' },
-  { label: 'Categories', href: '/categories' },
-  { label: 'Free Prompts', href: '/free' },
-  { label: 'Sell', href: '/sell' },
+const navItems = [
+  { label: 'Explore', to: '/explore' },
+  { label: 'Collections', to: '/categories' },
+  { label: 'For creators', to: '/seller/dashboard' },
 ];
 
 export default function Navbar() {
-  const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useAppStore();
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-surface-200/60">
-      <div className="container-main">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 group"
-            onClick={closeMobileMenu}
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-              <Sparkles className="w-4.5 h-4.5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-surface-900 tracking-tight">
-              Prompt<span className="text-gradient">Forge</span>
-            </span>
-          </Link>
-
-          {/* Desktop Search */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div
-              className={`relative w-full transition-all duration-300 ${
-                isSearchFocused ? 'scale-105' : ''
-              }`}
-            >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-              <input
-                type="text"
-                placeholder="Search prompts..."
-                className="input pl-10 pr-4 py-2 bg-surface-50 border-surface-200 text-sm rounded-xl"
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-              />
-            </div>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className="px-3 py-2 text-sm font-medium text-surface-600 rounded-lg
-                         hover:text-surface-900 hover:bg-surface-100
-                         transition-all duration-200"
-              >
-                {link.label}
-              </Link>
+    <>
+      <header className="border-b border-paper-300 bg-paper-50/95 backdrop-blur">
+        <div className="page-shell flex h-[72px] items-center justify-between gap-4">
+          <BrandMark />
+          <nav className="hidden items-center gap-6 md:flex" aria-label="Main navigation">
+            {navItems.map(({ label, to }) => (
+              <NavLink key={to} to={to} className={({ isActive }) => `text-sm font-bold transition ${isActive ? 'text-forge-600' : 'text-ink-500 hover:text-ink-900'}`}>
+                {label}
+              </NavLink>
             ))}
           </nav>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2 ml-4">
-            <button
-              className="p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-all duration-200"
-              aria-label="Wishlist"
-            >
-              <Heart className="w-5 h-5" />
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setSearchOpen(true)} className="hidden items-center gap-2 border border-paper-300 bg-white px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-ink-300 hover:text-ink-800 sm:flex" aria-label="Search prompts">
+              <Search className="h-4 w-4" /> Search <kbd className="ml-4 border-l border-paper-300 pl-2 text-[0.65rem] text-ink-300">⌘ K</kbd>
             </button>
-            <button
-              className="p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-all duration-200"
-              aria-label="Cart"
-            >
-              <ShoppingBag className="w-5 h-5" />
+            <Link to="/wishlist" className="grid h-9 w-9 place-items-center text-ink-500 transition hover:bg-paper-100 hover:text-forge-600" aria-label="Open wishlist"><Bookmark className="h-4 w-4" /></Link>
+            <Link to="/cart" className="hidden h-9 w-9 place-items-center text-ink-500 transition hover:bg-paper-100 hover:text-forge-600 sm:grid" aria-label="Open cart"><ShoppingBag className="h-4 w-4" /></Link>
+            <Link to="/login" className="button-primary hidden py-2 md:inline-flex">Sign in</Link>
+            <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="grid h-9 w-9 place-items-center md:hidden" aria-label="Toggle menu" aria-expanded={menuOpen}>
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <div className="w-px h-6 bg-surface-200 mx-1" />
-            <Link
-              to="/login"
-              className="btn-ghost text-sm py-2 px-4"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="btn-primary text-sm py-2 px-4"
-            >
-              Sign up
-            </Link>
           </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={toggleMobileMenu}
-            className="lg:hidden p-2 text-surface-600 hover:bg-surface-100 rounded-lg transition-colors"
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden pb-4 animate-slide-down">
-            {/* Mobile Search */}
-            <div className="px-1 mb-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                <input
-                  type="text"
-                  placeholder="Search prompts..."
-                  className="input pl-10 pr-4 py-2.5 bg-surface-50 text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Mobile Nav Links */}
-            <nav className="flex flex-col gap-0.5 px-1 mb-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={closeMobileMenu}
-                  className="px-3 py-2.5 text-sm font-medium text-surface-600 rounded-lg
-                           hover:text-surface-900 hover:bg-surface-100
-                           transition-all duration-200"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Mobile Actions */}
-            <div className="flex flex-col gap-2 px-1 pt-3 border-t border-surface-200">
-              <Link
-                to="/login"
-                onClick={closeMobileMenu}
-                className="btn-secondary w-full justify-center"
-              >
-                <User className="w-4 h-4" />
-                Log in
-              </Link>
-              <Link
-                to="/register"
-                onClick={closeMobileMenu}
-                className="btn-primary w-full justify-center"
-              >
-                Sign up
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
+        {menuOpen && <nav className="page-shell animate-catalog-in border-t border-paper-300 py-4 md:hidden" aria-label="Mobile navigation">{navItems.map(({ label, to }) => <NavLink key={to} to={to} onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-ink-700">{label}</NavLink>)}<Link to="/login" className="mt-2 block py-2 text-sm font-bold text-forge-600">Sign in</Link></nav>}
+      </header>
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }
