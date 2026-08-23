@@ -1,6 +1,6 @@
 # PromptForge
 
-> AI Prompt Marketplace — Discover, buy, sell, and share high-quality AI prompts.
+> A considered marketplace for AI prompts that are designed to be used again.
 
 ## Tech Stack
 
@@ -72,12 +72,23 @@ Expected response:
 }
 ```
 
-## Modules
+## Current product slice
 
-- [x] Module 1: Project Setup
-- [ ] Module 2: Database
-- [ ] Module 3: Authentication
-- [ ] Module 4+: See development roadmap
+- Editorial marketplace home, responsive catalog, collection index, prompt detail with protected preview, and keyboard search (`Ctrl/Cmd + K`).
+- Creator workspace and intentionally designed empty wishlist/cart states.
+- Prisma data model for accounts, seller profiles, prompts, versions, tags, carts/orders, payments, reviews, notifications, reports, payouts, and packs.
+- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, and protected `GET /api/auth/me` routes with Zod validation and signed, expiring access tokens.
+
+## Seeded development accounts
+
+Run `npm run db:seed` from `server/` after applying the schema. All seeded accounts use `PromptForgeDemo!2026`.
+
+| Role | Email |
+| --- | --- |
+| Admin | `admin@promptforge.local` |
+| Seller | `mina@promptforge.local` |
+| Seller | `owen@promptforge.local` |
+| User | `rae@promptforge.local` |
 
 ## License
 
