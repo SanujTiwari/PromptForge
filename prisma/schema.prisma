@@ -1,0 +1,12 @@
+// PromptForge Prisma Schema
+// Module 1: Initial setup — datasource and generator only.
+// Models will be added in Module 2 (Database).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
