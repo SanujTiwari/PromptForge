@@ -1,0 +1,4 @@
+import { ArrowRight, Bookmark } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+
+export default function ShelfPage() { const { pathname } = useLocation(); const isCart = pathname === '/cart'; return <div className="page-shell py-16 text-center"><Bookmark className="mx-auto h-7 w-7 text-forge-600" /><p className="eyebrow mt-6">Your shelf</p><h1 className="display mt-2 text-5xl">{isCart ? 'Your basket is waiting.' : 'Your shelf is empty.'}</h1><p className="mx-auto mt-4 max-w-md text-sm leading-6 text-ink-500">{isCart ? 'Add a prompt when you are ready to make it part of your toolkit.' : 'Save promising prompts here, then return when the right project arrives.'}</p><Link to="/explore" className="button-primary mt-7">Explore prompts <ArrowRight className="h-4 w-4" /></Link></div>; }

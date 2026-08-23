@@ -3,6 +3,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MainLayout from '@/layouts/MainLayout';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import ExplorePage from '@/pages/ExplorePage';
+import PromptDetailPage from '@/pages/PromptDetailPage';
+import CollectionsPage from '@/pages/CollectionsPage';
+import LoginPage from '@/pages/LoginPage';
+import CreatorDashboardPage from '@/pages/CreatorDashboardPage';
+import ShelfPage from '@/pages/ShelfPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,11 +27,17 @@ export default function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
-
-            {/* Future routes — will be added per module */}
-            {/* <Route path="/explore" element={<ExplorePage />} /> */}
-            {/* <Route path="/login" element={<LoginPage />} /> */}
-            {/* <Route path="/register" element={<RegisterPage />} /> */}
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/categories" element={<CollectionsPage />} />
+            <Route path="/prompts/:slug" element={<PromptDetailPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<LoginPage />} />
+            <Route path="/seller/dashboard" element={<CreatorDashboardPage />} />
+            <Route path="/seller/prompts" element={<CreatorDashboardPage />} />
+            <Route path="/seller/prompts/create" element={<CreatorDashboardPage />} />
+            <Route path="/wishlist" element={<ShelfPage />} />
+            <Route path="/cart" element={<ShelfPage />} />
+            <Route path="/ai/generator" element={<CreatorDashboardPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>
