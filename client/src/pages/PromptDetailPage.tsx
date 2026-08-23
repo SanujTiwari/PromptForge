@@ -1,4 +1,4 @@
-import { Bookmark, Check, ChevronRight, Copy, LockKeyhole, Star } from 'lucide-react';
+import { Bookmark, Check, ChevronRight, LockKeyhole, Star } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { formatPrice, prompts } from '@/data/catalog';
 import PromptCard from '@/components/PromptCard';

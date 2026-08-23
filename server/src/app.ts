@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/error.middleware';
 import { env } from './config/env';
 
 const app = express();
+app.disable('x-powered-by');
 
 // ─── Security ────────────────────────────────────────────
 app.use(helmet());

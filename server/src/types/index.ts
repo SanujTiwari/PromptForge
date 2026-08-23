@@ -1,5 +1,5 @@
-// PromptForge - Custom Express types
-// Extended types will be added as modules grow (e.g., AuthenticatedRequest)
+import { Request } from 'express';
+import { Role } from '@prisma/client';
 
 export interface ApiSuccessResponse<T = unknown> {
   success: true;
@@ -14,3 +14,11 @@ export interface ApiErrorResponse {
 }
 
 export type ApiResponseType<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+export interface AuthenticatedRequest extends Request {
+  authUser: {
+    sub: string;
+    role: Role;
+    exp: number;
+  };
+}

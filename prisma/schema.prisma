@@ -2,13 +2,58 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Role { USER SELLER ADMIN }
-enum SellerStatus { PENDING APPROVED REJECTED SUSPENDED }
-enum PromptStatus { DRAFT PENDING_REVIEW APPROVED REJECTED SUSPENDED }
-enum OrderStatus { PENDING PAID FAILED CANCELLED REFUNDED }
-enum PaymentStatus { CREATED AUTHORIZED CAPTURED FAILED REFUNDED }
-enum ReportReason { COPIED_PROMPT SCAM LOW_QUALITY COPYRIGHT INAPPROPRIATE OTHER }
-enum ReportStatus { OPEN REVIEWING RESOLVED DISMISSED }
+enum Role {
+  USER
+  SELLER
+  ADMIN
+}
+
+enum SellerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum PromptStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+enum ReportReason {
+  COPIED_PROMPT
+  SCAM
+  LOW_QUALITY
+  COPYRIGHT
+  INAPPROPRIATE
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
 
 model User {
   id           String         @id @default(cuid())
