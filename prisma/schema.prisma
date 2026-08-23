@@ -1,9 +1,292 @@
-// PromptForge Prisma Schema
-// Module 1: Initial setup — datasource and generator only.
-// Models will be added in Module 2 (Database).
-
 generator client {
   provider = "prisma-client-js"
+}
+
+enum Role { USER SELLER ADMIN }
+enum SellerStatus { PENDING APPROVED REJECTED SUSPENDED }
+enum PromptStatus { DRAFT PENDING_REVIEW APPROVED REJECTED SUSPENDED }
+enum OrderStatus { PENDING PAID FAILED CANCELLED REFUNDED }
+enum PaymentStatus { CREATED AUTHORIZED CAPTURED FAILED REFUNDED }
+enum ReportReason { COPIED_PROMPT SCAM LOW_QUALITY COPYRIGHT INAPPROPRIATE OTHER }
+enum ReportStatus { OPEN REVIEWING RESOLVED DISMISSED }
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String
+  displayName  String
+  role         Role           @default(USER)
+  avatarUrl    String?
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sellerProfile SellerProfile?
+  orders       Order[]
+  reviews      Review[]
+  wishlist     Wishlist?
+  reports      Report[]
+  notifications Notification[]
+
+  @@index([role])
+}
+
+model SellerProfile {
+  id          String       @id @default(cuid())
+  userId      String       @unique
+  slug        String       @unique
+  storeName   String
+  bio         String?
+  websiteUrl  String?
+  status      SellerStatus @default(PENDING)
+  rating      Float        @default(0)
+  salesCount  Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompts     Prompt[]
+  promptPacks PromptPack[]
+  payouts     SellerPayout[]
+
+  @@index([status])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  prompts     Prompt[]
+}
+
+model Tag {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  slug      String      @unique
+  createdAt DateTime    @default(now())
+  prompts   PromptTag[]
+}
+
+model Prompt {
+  id                String        @id @default(cuid())
+  sellerId          String
+  categoryId        String
+  title             String
+  slug              String        @unique
+  description       String
+  content           String
+  preview           String
+  exampleInput      String?
+  exampleOutput     String?
+  usageInstructions String?
+  price             Decimal       @db.Decimal(10, 2) @default(0)
+  aiModel           String
+  thumbnailUrl      String?
+  status            PromptStatus  @default(DRAFT)
+  rating            Float         @default(0)
+  ratingCount       Int           @default(0)
+  salesCount        Int           @default(0)
+  isFeatured        Boolean       @default(false)
+  isTrending        Boolean       @default(false)
+  isEditorsPick     Boolean       @default(false)
+  currentVersion    Int           @default(1)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  seller            SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  category          Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  tags              PromptTag[]
+  versions          PromptVersion[]
+  orderItems        OrderItem[]
+  reviews           Review[]
+  wishlistItems     WishlistItem[]
+  reports           Report[]
+  packItems         PromptPackItem[]
+
+  @@index([status, createdAt])
+  @@index([categoryId, status])
+  @@index([sellerId, status])
+  @@index([isFeatured, status])
+}
+
+model PromptTag {
+  promptId String
+  tagId    String
+  prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([promptId, tagId])
+}
+
+model PromptVersion {
+  id                String   @id @default(cuid())
+  promptId          String
+  version           Int
+  content           String
+  preview           String
+  usageInstructions String?
+  changeNote        String?
+  createdAt         DateTime @default(now())
+  prompt            Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@unique([promptId, version])
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  buyerId   String
+  subtotal  Decimal     @db.Decimal(10, 2)
+  discount  Decimal     @db.Decimal(10, 2) @default(0)
+  total     Decimal     @db.Decimal(10, 2)
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  buyer     User        @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  items     OrderItem[]
+  payment   Payment?
+
+  @@index([buyerId, createdAt])
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  orderId       String
+  promptId      String
+  titleSnapshot String
+  priceSnapshot Decimal  @db.Decimal(10, 2)
+  version       Int
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  prompt        Prompt   @relation(fields: [promptId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, promptId])
+  @@index([promptId])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String        @unique
+  providerOrderId String?       @unique
+  providerPaymentId String?     @unique
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("INR")
+  status          PaymentStatus @default(CREATED)
+  verifiedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  transaction     Transaction?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  promptId  String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, promptId])
+  @@index([promptId, createdAt])
+}
+
+model Wishlist {
+  id        String         @id @default(cuid())
+  userId    String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     WishlistItem[]
+}
+
+model WishlistItem {
+  wishlistId String   
+  promptId   String
+  createdAt  DateTime @default(now())
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  prompt     Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@id([wishlistId, promptId])
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  reporterId String
+  promptId  String?
+  reason    ReportReason
+  details   String?
+  status    ReportStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  reporter  User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  prompt    Prompt?      @relation(fields: [promptId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  paymentId   String   @unique
+  amount      Decimal  @db.Decimal(10, 2)
+  platformFee Decimal  @db.Decimal(10, 2) @default(0)
+  sellerShare Decimal  @db.Decimal(10, 2) @default(0)
+  createdAt   DateTime @default(now())
+  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+}
+
+model SellerPayout {
+  id        String        @id @default(cuid())
+  sellerId  String
+  amount    Decimal       @db.Decimal(10, 2)
+  status    String        @default("PENDING")
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+  seller    SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+
+  @@index([sellerId, createdAt])
+}
+
+model PromptPack {
+  id          String        @id @default(cuid())
+  sellerId    String
+  title       String
+  slug        String        @unique
+  description String
+  price       Decimal       @db.Decimal(10, 2)
+  status      PromptStatus  @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  seller      SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  items       PromptPackItem[]
+
+  @@index([sellerId, status])
+}
+
+model PromptPackItem {
+  packId   String
+  promptId String
+  pack     PromptPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+  prompt   Prompt     @relation(fields: [promptId], references: [id], onDelete: Restrict)
+
+  @@id([packId, promptId])
 }
 
 datasource db {
