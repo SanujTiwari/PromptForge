@@ -69,6 +69,7 @@ model User {
   orders       Order[]
   reviews      Review[]
   wishlist     Wishlist?
+  cart         Cart?
   reports      Report[]
   notifications Notification[]
 
@@ -146,6 +147,7 @@ model Prompt {
   orderItems        OrderItem[]
   reviews           Review[]
   wishlistItems     WishlistItem[]
+  cartItems         CartItem[]
   reports           Report[]
   packItems         PromptPackItem[]
 
@@ -256,6 +258,25 @@ model WishlistItem {
   prompt     Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
 
   @@id([wishlistId, promptId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+}
+
+model CartItem {
+  cartId    String
+  promptId  String
+  createdAt DateTime @default(now())
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  @@id([cartId, promptId])
 }
 
 model Report {

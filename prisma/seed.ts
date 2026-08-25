@@ -90,6 +90,8 @@ async function main() {
   await Promise.all(seededPrompts.slice(0, 3).map((prompt) => prisma.wishlistItem.upsert({
     where: { wishlistId_promptId: { wishlistId: wishlist.id, promptId: prompt.id } }, update: {}, create: { wishlistId: wishlist.id, promptId: prompt.id },
   })));
+  const cart = await prisma.cart.upsert({ where: { userId: reviewers[1].id }, update: {}, create: { userId: reviewers[1].id } });
+  await prisma.cartItem.upsert({ where: { cartId_promptId: { cartId: cart.id, promptId: seededPrompts[1].id } }, update: {}, create: { cartId: cart.id, promptId: seededPrompts[1].id } });
   console.log(`Seeded ${users.length} users, ${categories.length} categories, ${tags.length} tags, and ${seededPrompts.length} prompts.`);
 }
 

@@ -45,6 +45,9 @@ npm run prisma:generate
 
 # Push schema to database
 npm run prisma:push
+
+# Add development catalog data and demo accounts
+npm run prisma:seed
 ```
 
 ### Development
