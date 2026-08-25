@@ -1,9 +1,8 @@
 import { Bookmark, ArrowUpRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PromptRecord, accentMap, formatPrice } from '@/data/catalog';
+import { PromptRecord, formatPrice } from '@/data/catalog';
 
 export default function PromptCard({ prompt, index = 0 }: { prompt: PromptRecord; index?: number }) {
-  const accent = accentMap[prompt.accent];
 
   return (
     <article
